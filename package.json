@@ -1,0 +1,41 @@
+{
+  "name": "session-booking-api",
+  "version": "1.0.0",
+  "description": "REST API for booking sessions with teachers (Node.js, TypeScript, Express, MongoDB, Mongoose) — layered architecture",
+  "main": "dist/app.js",
+  "scripts": {
+    "build": "tsc",
+    "prestart": "npm run build",
+    "start": "node dist/app.js",
+    "dev": "nodemon --watch src --ext ts --exec \"ts-node src/app.ts\"",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "express",
+    "typescript",
+    "mongodb",
+    "mongoose",
+    "rest-api",
+    "layered-architecture"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "joi": "^17.13.3",
+    "mongoose": "^8.9.5",
+    "uuid": "^11.0.5",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.10.7",
+    "@types/uuid": "^10.0.0",
+    "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  }
+}
