@@ -1,0 +1,180 @@
+{
+  "info": {
+    "name": "Session Booking API (layered)",
+    "description": "REST API for booking sessions with teachers. Requests are ordered as a natural flow and auto-populate collection variables (teacherId, userId, sessionId) from responses. Routes are under {{baseUrl}}{{apiPrefix}}.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "apiPrefix", "value": "/api" },
+    { "key": "teacherId", "value": "" },
+    { "key": "userId", "value": "" },
+    { "key": "sessionId", "value": "" },
+    { "key": "dateTimestamp", "value": "1783641600000" }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/health", "host": ["{{baseUrl}}"], "path": ["health"] }
+      }
+    },
+    {
+      "name": "Create Teacher (helper)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const res = pm.response.json();",
+              "if (res && res.data && res.data._id) pm.collectionVariables.set('teacherId', res.data._id);",
+              "pm.test('status is 201', () => pm.response.to.have.status(201));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"fullName\": \"Dr. Jane Smith\",\n  \"email\": \"jane@example.com\",\n  \"specialization\": \"Mathematics\",\n  \"experience\": 8\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}{{apiPrefix}}/teachers",
+          "host": ["{{baseUrl}}{{apiPrefix}}"],
+          "path": ["teachers"]
+        }
+      }
+    },
+    {
+      "name": "API 1 - Create User",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const res = pm.response.json();",
+              "if (res && res.data && res.data._id) pm.collectionVariables.set('userId', res.data._id);",
+              "pm.test('status is 201', () => pm.response.to.have.status(201));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"fullName\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"phone\": \"+1-555-0100\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}{{apiPrefix}}/users",
+          "host": ["{{baseUrl}}{{apiPrefix}}"],
+          "path": ["users"]
+        }
+      }
+    },
+    {
+      "name": "API 2 - Create Session",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const res = pm.response.json();",
+              "if (res && res.data && res.data._id) pm.collectionVariables.set('sessionId', res.data._id);",
+              "pm.test('status is 201', () => pm.response.to.have.status(201));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"teacherId\": \"{{teacherId}}\",\n  \"startTime\": \"2026-07-10T09:00:00.000Z\",\n  \"endTime\": \"2026-07-10T10:00:00.000Z\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}{{apiPrefix}}/sessions",
+          "host": ["{{baseUrl}}{{apiPrefix}}"],
+          "path": ["sessions"]
+        }
+      }
+    },
+    {
+      "name": "API 3 - Available Sessions",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}{{apiPrefix}}/sessions/available?dateTimestamp={{dateTimestamp}}",
+          "host": ["{{baseUrl}}{{apiPrefix}}"],
+          "path": ["sessions", "available"],
+          "query": [{ "key": "dateTimestamp", "value": "{{dateTimestamp}}" }]
+        }
+      }
+    },
+    {
+      "name": "API 4 - Book Session",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": ["pm.test('status is 200', () => pm.response.to.have.status(200));"],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"userId\": \"{{userId}}\"\n}" },
+        "url": {
+          "raw": "{{baseUrl}}{{apiPrefix}}/sessions/{{sessionId}}/book",
+          "host": ["{{baseUrl}}{{apiPrefix}}"],
+          "path": ["sessions", "{{sessionId}}", "book"]
+        }
+      }
+    },
+    {
+      "name": "API 5 - Mark Session Complete",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": ["pm.test('status is 200', () => pm.response.to.have.status(200));"],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}{{apiPrefix}}/sessions/{{sessionId}}/complete",
+          "host": ["{{baseUrl}}{{apiPrefix}}"],
+          "path": ["sessions", "{{sessionId}}", "complete"]
+        }
+      }
+    },
+    {
+      "name": "API 6 - User Session List",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}{{apiPrefix}}/users/{{userId}}/sessions",
+          "host": ["{{baseUrl}}{{apiPrefix}}"],
+          "path": ["users", "{{userId}}", "sessions"]
+        }
+      }
+    }
+  ]
+}
